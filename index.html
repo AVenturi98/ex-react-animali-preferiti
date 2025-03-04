@@ -19,21 +19,36 @@
 
         const Modal = () => {
 
-            const [open, setOpen] = useState(false);
+            const [add, setAdd] = useState([]);
 
             const animals = ['Cane', 'Gatto', 'Elefante', 'Leone', 'Orso'];
 
+
+            const AddAnimal = () => {
+
+                const numberI = Math.floor(Math.random() * animals.length);
+
+                const newAnimal = add.splice(animals[numberI], 0, document.querySelector('.ul').innerHTML += `<li>${animals[numberI]}</li>`)
+
+                setAdd(newAnimal)
+            }
+
+
+
+
             return (
-                <details>
-                    <summary>Animali</summary>
-                    <p>
-                        <ul>
-                            {animals.map((e, i) =>
+                <div>
+                    <h2>Aggiungi un animale alla lista</h2>
+                    <button type="button" onClick={AddAnimal}>Aggiungi</button>
+                    <details>
+                        <summary>Animali</summary>
+                        <ul className="ul">
+                            {add.map((e, i) => {
                                 <li key={i}>{e}</li>
-                            )}
+                            })}
                         </ul>
-                    </p>
-                </details>
+                    </details>
+                </div>
             )
         }
     </script>
@@ -62,8 +77,6 @@
         <p>Creato con amore da... un collega sbadato! 🐾</p>
     </footer>
 
-
-
 </body>
 
 </html>
@@ -73,68 +86,6 @@
 <!-- 
 Il tuo collega, probabilmente distratto da un gatto o un pappagallo, ha creato una pagina HTML statica invece di utilizzare React come richiesto. La pagina è già online, quindi non possiamo rifarla da zero. Ora tocca a te trasformarla in una meraviglia interattiva usando React, direttamente all’interno del documento HTML. Segui le milestone e dimostra che anche un errore può diventare un’opportunità per brillare!
 
-HTML
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I miei animali Preferiti</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-      <h1>I miei animali Preferiti</h1>
-    </header>
-    <main>
-        <figure>
-            <img src="https://picsum.photos/400/300" alt="Immagine Casuale">
-        </figure>
-        <div class="lista-animali"></div>
-    </main>
-      <footer>
-      <p>Creato con amore da... un collega sbadato! 🐾</p>
-    </footer>
-  </body>
-</html>
-
-CSS
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-header {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-}
-main {
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-}
-form{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-img{
-    max-width: 100%;
-}
-.lista-animali{
-    width: 100%;
-}
 
 MILESTONES
 📌 Milestone 1: Inserire un Componente React
@@ -155,5 +106,4 @@ Usa un array predefinito per scegliere casualmente:
 const animalsChoices = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
 L’animale selezionato deve essere aggiunto all’interno della lista <ul> come <li>.
 
-Obiettivo: L’utente può vedere gli animali aggiunti dinamicamente nella lista.
--->
+Obiettivo: L’utente può vedere gli animali aggiunti dinamicamente nella lista. -->
