@@ -12,54 +12,150 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- Dico a babel di controllare questo file script -->
     <script type="text/babel">
+
         const { useState } = React;
+        const { createRoot } = ReactDOM;
 
-        const Modal = () => {
+        function Modal({
+            title,
+            content,
+            show = false,
+            onClose = () => { },
+            onSearch = () => { },
+            onConfirm = () => { },
+            load = false,
+            result = [],
+            notRes = { notRes }
+        }) {
 
-            const [add, setAdd] = useState([]);
+            const animal = result[0];
 
-            const animals = ['Cane', 'Gatto', 'Elefante', 'Leone', 'Orso'];
+            return show && ReactDOM.createPortal(
+                <div className="modal-container">
+                    <div className="modal">
+                        {load ?
+                            <div className="loader">
+                                Caricamento...
+                            </div>
+                            :
+                            <>
+                                <h2>{title}</h2>
+                                <div>{content}</div>
+                                {animal ?
+                                    <div className="card">
+                                        <img src={animal.image} alt={animal.name} />
+                                        <h3>{animal.name}</h3>
+                                        {animal.description &&
+                                            <p>{animal.description}</p>}
+                                        <div>
+                                            <button onClick={onConfirm}>Aggiungi</button>
+                                        </div>
+                                    </div>
+                                    : notRes && 'Nessun risultato disponibile'
+                                }
+                                <div>
+                                    <button onClick={onClose}>Annulla</button>
+                                    <button onClick={onSearch}>Cerca</button>
+                                </div>
+                            </>}
+                    </div>
+                </div>,
+                document.body
+            )
+        }
+
+        function App() {
+
+            const [visible, setVisible] = useState(true); // set Show Modal
+            const [value, setValue] = useState(''); // set Value to Input 
+            const [loading, setLoading] = useState(false); // set Loader
+            const [animalSearched, setAnimalSearched] = useState([]); // set Animal Searched from Input
+            const [notRes, setNoteRes] = useState(false); // set Not Result 
 
 
-            const AddAnimal = () => {
 
-                const numberI = Math.floor(Math.random() * animals.length);
 
-                const newAnimal = add.splice(animals[numberI], 0, document.querySelector('.ul').innerHTML += `<li>${animals[numberI]}</li>`)
+            // const animalsChoices = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
 
-                setAdd(newAnimal)
+            // const randomAnimal = () => {
+
+            //     if (animals.length >= animalsChoices.length) {
+            //         console.log("Tutti gli animali sono stati aggiunti!");
+            //         return setActive(true);
+            //     }
+
+            //     let randomAnimal;
+            //     do {
+            //         randomAnimal = animalsChoices[Math.floor(Math.random() * animalsChoices.length)];
+            //     } while (animals.includes(randomAnimal))
+
+            //     setAnimals([...animals, randomAnimal]);
+            //     return document.querySelector('.list').innerHTML += `${randomAnimal} <br/>`
+            // }
+
+            function fetchAnimals() {
+                setLoading(true); // imposto il loader predefinito su true
+
+                fetch(`https://boolean-spec-frontend.vercel.app/freetestapi/animals?search=${value}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data);
+                        setAnimalSearched(data); // modifico la varibiale di stato con i dati trovati
+                        setNoteRes(true) // se non emergono dati genera errore
+                        setLoading(false); // loader su false a seguito di dati trovati
+                        setValue(''); // reimposto l'input su valore vuoto
+                    })
+                    .catch(err => console.error(err))
             }
 
 
 
+            const confirm = () => {
+                document.querySelector('.list').innerHTML += `${animalSearched.map(e => e.name)} <br/>`; // aggiungo gli animali alla lista
+                setVisible(false); // chiudo il modale dopo conferma 
+                setAnimalSearched([]); // reimposto i risultato trovati in precedenza a 0
+            }
+
+            const close = () => {
+                setVisible(false);
+                setAnimalSearched([])
+            }
+
 
             return (
-                <div>
-                    <h2>Aggiungi un animale alla lista</h2>
-                    <button type="button" onClick={AddAnimal}>Aggiungi</button>
-                    <details>
-                        <summary>Animali</summary>
-                        <ul className="ul">
-                            {add.map((e, i) => {
-                                <li key={i}>{e}</li>
-                            })}
-                        </ul>
-                    </details>
-                </div>
+                <details>
+                    <button onClick={() => setVisible(true)}>Aggiungi animale</button>
+                    <summary>
+                        <b>Animali</b>
+                    </summary>
+                    <Modal
+                        title={'Aggiungi animale'}
+                        content={
+                            <input
+                                type="text"
+                                placeholder="cerca animale"
+                                onChange={e => setValue(e.target.value)}
+                                value={value} />
+                        }
+                        show={visible}
+                        onClose={close}
+                        onSearch={fetchAnimals}
+                        onConfirm={confirm}
+                        load={loading}
+                        result={animalSearched}
+                        notRes={notRes}
+                    />
+                    <ul className="list">
+                    </ul>
+                </details>
             )
         }
-    </script>
-    <script type="text/babel">
-        const { createRoot } = ReactDOM;
 
-        const elementDOM = document.querySelector('.lista-animali');
+        const newComponent = document.querySelector('.lista-animali');
+        const root = createRoot(newComponent);
+        root.render(<App />);
 
-        const root = createRoot(elementDOM)
-
-        root.render(<Modal />)
     </script>
 </head>
 
@@ -76,34 +172,6 @@
     <footer>
         <p>Creato con amore da... un collega sbadato! 🐾</p>
     </footer>
-
 </body>
 
 </html>
-
-
-
-<!-- 
-Il tuo collega, probabilmente distratto da un gatto o un pappagallo, ha creato una pagina HTML statica invece di utilizzare React come richiesto. La pagina è già online, quindi non possiamo rifarla da zero. Ora tocca a te trasformarla in una meraviglia interattiva usando React, direttamente all’interno del documento HTML. Segui le milestone e dimostra che anche un errore può diventare un’opportunità per brillare!
-
-
-MILESTONES
-📌 Milestone 1: Inserire un Componente React
-Monta un componente React all’interno dell’elemento con classe .lista-animali.
-
-Il componente deve includere:
-Un elemento <details> con titolo "Animali", che contiene:
-Una lista <ul> statica che viene creata a partire da un array di stringhe (animals) dove ciascuna stringa rappresenta il nome di un animale.
-
-Obiettivo: Mostrare la struttura base della lista di animali con un <details> che può essere espanso o contratto.
-
-
-    📌 Milestone 2: Aggiungere Animali Casuali
-Trasforma l’array animals usando useState (l’array è inizialmente vuoto).
-Aggiungi un bottone "Aggiungi Animale" sopra il <details>.
-Cliccando il bottone, un animale casuale viene aggiunto alla lista.
-Usa un array predefinito per scegliere casualmente:
-const animalsChoices = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
-L’animale selezionato deve essere aggiunto all’interno della lista <ul> come <li>.
-
-Obiettivo: L’utente può vedere gli animali aggiunti dinamicamente nella lista. -->
